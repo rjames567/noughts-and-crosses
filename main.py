@@ -37,6 +37,9 @@ class Board:
             raise CellOccupiedError
         self._grid[row][col] = self._piece_num_lookup[character]
 
+    def check_full(self):
+        return not sum(i.count(0) for i in self._grid)
+
     def check_win(self):
         for i in self._grid:
             total = sum(i)
