@@ -13,6 +13,7 @@ import enum
 class PlayerType(enum.Enum):
     HUMAN = enum.auto()
     RANDOM = enum.auto()
+    REINFORCEMENT_LEARNING = enum.auto()
 
 
 # ------------------------------------------------------------------------------
@@ -154,6 +155,15 @@ class RandomPlayer(Player):
         time.sleep(random.randrange(1, 5))
         return random.choice(arr)
 
+
+# ------------------------------------------------------------------------------
+# Reinforcement Learning player
+# ------------------------------------------------------------------------------
+class ReinforcementLearningPlayer(Player):
+    def __init__(self, piece, board, player_num):
+        super().__init__(piece, board, player_num)
+
+
 # ------------------------------------------------------------------------------
 # Game Class
 # ------------------------------------------------------------------------------
@@ -166,11 +176,15 @@ class Game:
             player1_object = Player(player1["piece"], self._board, 1)
         elif player1["type"] == PlayerType.RANDOM:
             player1_object = RandomPlayer(player1["piece"], self._board, 1)
+        elif player1["type"] == PlayerType.REINFORCEMENT_LEARNING:
+            player1_object = ReinforcementLearningPlayer(player1["piece"], self._board, 1)
 
         if player2["type"] == PlayerType.HUMAN:
             player2_object = Player(player2["piece"], self._board, 2)
         elif player2["type"] == PlayerType.RANDOM:
             player2_object = RandomPlayer(player2["piece"], self._board, 2)
+        elif player2["type"] == PlayerType.REINFORCEMENT_LEARNING:
+            player2_object = ReinforcementLearningPlayer(player2["piece"], self._board, 2)
 
         self._players = {
             0: player1_object,
