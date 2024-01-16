@@ -21,3 +21,32 @@ class Board:
 
     def move(self, row, col, character):
         self._grid[row][col] = self._piece_lookup_reverse(character)
+
+    def check_win(self):
+        for i in self._grid:
+            total = sum(i)
+            if total == 3:
+                return True, self._piece_lookup[1]
+            elif total == -3:
+                return True, self._piece_lookup[-1]
+
+        for i in range(3):
+            total = sum(k[i] for k in self._grid)
+            if total == 3:
+                return True, self._piece_lookup[1]
+            elif total == -3:
+                return True, self._piece_lookup[-1]
+
+        total = sum(self._grid[i][i] for i in range(3))
+        if total == 3:
+            return True, self._piece_lookup[1]
+        elif total == -3:
+            return True, self._piece_lookup[-1]
+
+        total = sum(self._grid[i][2 - i] for i in range(3))
+        if total == 3:
+            return True, self._piece_lookup[1]
+        elif total == -3:
+            return True, self._piece_lookup[-1]
+
+        return False, None#
