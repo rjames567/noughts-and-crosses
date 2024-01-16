@@ -1,4 +1,11 @@
 # ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
+import os
+import time
+
+
+# ------------------------------------------------------------------------------
 # Exceptions
 # ------------------------------------------------------------------------------
 class CellOccupiedError(Exception):
@@ -74,8 +81,10 @@ class Board:
 # Player Class
 # ------------------------------------------------------------------------------
 class Player:
-    def __init__(self, piece):
+    def __init__(self, piece, board, player_num):
         self._piece = piece
+        self._board = board
+        self._player_num = player_num
 
     def get_piece(self):
         return self._piece
@@ -90,6 +99,10 @@ class Player:
                 valid = True
             except ValueError:
                 print("The row you entered was not valid. Please enter another")
+                time.sleep(2)
+                clear()
+                print("Player", str(self._player_num) + "'s turn")
+                self._board.display()
 
         valid = False
         while not valid:
@@ -100,6 +113,11 @@ class Player:
                 valid = True
             except ValueError:
                 print("The column you entered was not valid. Please enter another")
+                time.sleep(2)
+                clear()
+                print("Player", str(self._player_num) + "'s turn")
+                self._board.display()
+                print("Enter the row: " + str(row + 1))
 
         return row, col
 
@@ -109,31 +127,29 @@ class Player:
 # ------------------------------------------------------------------------------
 class Game:
     def __init__(self):
-        pass
+        self._board = Board()
 
     def create_players(self, player1_piece, player2_piece):
         self._players = {
-            0: Player(player1_piece),
-            1: Player(player2_piece)
+            0: Player(player1_piece, self._board, 1),
+            1: Player(player2_piece, self._board, 2)
         }
 
     def play(self):
-        board = Board()
-
         player_count = 0
         finished = False
 
         while not finished:
             print("Player " + str(player_count + 1) + "'s turn")
-            board.display()
+            self._board.display()
 
             row, col = self._players[player_count].get_move()
-            board.add_piece(row, col, self._players[player_count].get_piece())
+            self._board.add_piece(row, col, self._players[player_count].get_piece())
 
             player_count = modulo_addition(player_count, 1, 2)
 
-            win, piece = board.check_win()
-            if win or board.check_full():
+            win, piece = self._board.check_win()
+            if win or self._board.check_full():
                 finished = True
 
         if win:
@@ -149,6 +165,9 @@ class Game:
 # ------------------------------------------------------------------------------
 def modulo_addition(num1, num2, base):
     return (num1 + num2) % base
+
+def clear():
+    os.system("clear" if os.name == "posix" else "cls")
 
 # ------------------------------------------------------------------------------
 # Play method
