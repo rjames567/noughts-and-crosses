@@ -7,6 +7,11 @@ class Board:
             -1: "O"
         }
 
+    def _display_horizontal_line(self):
+        print("+---" * 3 + "+")
+
     def display(self):
         for i in self._grid:
+            self._display_horizontal_line()
             print("¦ " + " ¦ ".join(self._piece_lookup[k] for k in i) + " ¦")
+        self._display_horizontal_line()
