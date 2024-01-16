@@ -33,6 +33,13 @@ class Board:
     def _display_horizontal_line(self):
         print("+---" * 3 + "+")
 
+    def get_empty(self):
+        res = []
+        for row, i in enumerate(self._grid):
+            for col, k in enumerate(i):
+                if k == 0:
+                    res.append((row, col))
+
     def display(self):
         for i in self._grid:
             self._display_horizontal_line()
