@@ -100,6 +100,11 @@ class Board:
 
         return False, None
 
+    def get_rotation_strings(self):
+        rotations = [self._grid]
+        for i in range(3):
+            rotations.append(self._rotate(rotations[i]))
+        return ["".join(str(i) for sub in arr for i in sub) for arr in rotations]
 
 # ------------------------------------------------------------------------------
 # Player Class
