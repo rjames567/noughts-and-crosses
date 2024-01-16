@@ -7,11 +7,14 @@ class Board:
             -1: "O"
         }
 
+        self._piece_num_lookup = {
+            " ": 0,
+            "X": 1,
+            "O": -1
+        }
+
     def _display_horizontal_line(self):
         print("+---" * 3 + "+")
-
-    def _piece_lookup_reverse(self, character):
-        return list(self._piece_lookup.keys())[list(self._piece_lookup.values()).index(character)]
 
     def display(self):
         for i in self._grid:
@@ -20,7 +23,7 @@ class Board:
         self._display_horizontal_line()
 
     def move(self, row, col, character):
-        self._grid[row][col] = self._piece_lookup_reverse(character)
+        self._grid[row][col] = self._piece_num_lookup[character]
 
     def check_win(self):
         for i in self._grid:
@@ -49,4 +52,4 @@ class Board:
         elif total == -3:
             return True, self._piece_lookup[-1]
 
-        return False, None#
+        return False, None
