@@ -1,4 +1,11 @@
 # ------------------------------------------------------------------------------
+# Exceptions
+# ------------------------------------------------------------------------------
+class CellOccupiedError(Exception):
+    def __init__(self):
+        super().__init__("The target cell on the board is already occupied")
+
+# ------------------------------------------------------------------------------
 # Board Class
 # ------------------------------------------------------------------------------
 class Board:
@@ -26,6 +33,8 @@ class Board:
         self._display_horizontal_line()
 
     def move(self, row, col, character):
+        if self._grid[row][col]:
+            raise CellOccupiedError
         self._grid[row][col] = self._piece_num_lookup[character]
 
     def check_win(self):
