@@ -173,6 +173,7 @@ def clear():
 # Play method
 # ------------------------------------------------------------------------------
 def play():
+    clear()
     game = Game()
     game.create_players("X", "O")
     game.play()
