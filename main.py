@@ -64,3 +64,29 @@ class Board:
 class Player:
     def __init__(self, piece):
         self._piece = piece
+
+    def get_piece(self):
+        return self._piece
+
+    def get_move(self):
+        valid = False
+        while not valid:
+            try:
+                row = int(input("Enter the row: ")) - 1
+                if not 0 <= row <= 2:
+                    raise ValueError
+                valid = True
+            except ValueError:
+                print("The row you entered was not valid. Please enter another")
+
+        valid = False
+        while not valid:
+            try:
+                col = int(input("Enter column row: ")) - 1
+                if not 0 <= col <= 2:
+                    raise ValueError
+                valid = True
+            except ValueError:
+                print("The column you entered was not valid. Please enter another")
+
+        return row, col
