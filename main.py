@@ -3,6 +3,16 @@
 # ------------------------------------------------------------------------------
 import os
 import time
+import random
+import enum
+
+
+# ------------------------------------------------------------------------------
+# Class enums
+# ------------------------------------------------------------------------------
+class PlayerType(enum.Enum):
+    HUMAN = enum.auto()
+    RANDOM = enum.auto()
 
 
 # ------------------------------------------------------------------------------
@@ -39,6 +49,7 @@ class Board:
             for col, k in enumerate(i):
                 if k == 0:
                     res.append((row, col))
+        return res
 
     def display(self):
         for i in self._grid:
@@ -132,16 +143,38 @@ class Player:
 
 
 # ------------------------------------------------------------------------------
+# Random player
+# ------------------------------------------------------------------------------
+class RandomPlayer(Player):
+    def get_move(self):
+        print("Player", str(self._player_num) + "'s turn")
+        self._board.display()
+        print("Player", str(self._player_num) + " is thinking")
+        arr = self._board.get_empty()
+        time.sleep(random.randrange(1, 5))
+        return random.choice(arr)
+
+# ------------------------------------------------------------------------------
 # Game Class
 # ------------------------------------------------------------------------------
 class Game:
     def __init__(self):
         self._board = Board()
 
-    def create_players(self, player1_piece, player2_piece):
+    def create_players(self, player1, player2):
+        if player1["type"] == PlayerType.HUMAN:
+            player1_object = Player(player1["piece"], self._board, 1)
+        elif player1["type"] == PlayerType.RANDOM:
+            player1_object = RandomPlayer(player1["piece"], self._board, 1)
+
+        if player2["type"] == PlayerType.HUMAN:
+            player2_object = Player(player2["piece"], self._board, 2)
+        elif player2["type"] == PlayerType.RANDOM:
+            player2_object = RandomPlayer(player2["piece"], self._board, 2)
+
         self._players = {
-            0: Player(player1_piece, self._board, 1),
-            1: Player(player2_piece, self._board, 2)
+            0: player1_object,
+            1: player2_object
         }
 
     def play(self):
@@ -192,7 +225,7 @@ def clear():
 def play():
     clear()
     game = Game()
-    game.create_players("X", "O")
+    game.create_players({"piece": "X", "type": PlayerType.HUMAN}, {"piece": "O", "type": PlayerType.RANDOM})
     game.play()
 
 if __name__ == "__main__":
