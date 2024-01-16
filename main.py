@@ -172,6 +172,14 @@ class RandomPlayer(Player):
 class ReinforcementLearningPlayer(Player):
     def __init__(self, piece, board, player_num):
         super().__init__(piece, board, player_num)
+        self._load_file()
+
+    def _load_file(self):
+        self._lookup = dict()
+        with open("data.csv", "r") as f:
+            for i in f:
+                items = i.split(",")
+                self._lookup[items[0]] = [int(i) for i in items[1:]]
 
 
 # ------------------------------------------------------------------------------
