@@ -142,8 +142,16 @@ class Game:
         finished = False
 
         while not finished:
-            row, col = self._players[player_count].get_move()
-            self._board.add_piece(row, col, self._players[player_count].get_piece())
+            valid = False
+            while not valid:
+                row, col = self._players[player_count].get_move()
+                try:
+                    self._board.add_piece(row, col, self._players[player_count].get_piece())
+                    valid = True
+                except CellOccupiedError:
+                    print("The chosen cell is occupied. Please chose another.")
+                    time.sleep(2)
+                    clear()
 
             player_count = modulo_addition(player_count, 1, 2)
 
@@ -157,7 +165,7 @@ class Game:
             winner = "1"
             if self._players[1].get_piece() == piece:
                 winner = "2"
-            print("Player", str(winner), "won.")
+            print("Player", str(winner), "wins.")
         else:
             print("Player 1 and Player 2 drew")
 
