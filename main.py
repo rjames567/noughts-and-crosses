@@ -91,6 +91,8 @@ class Player:
 
     def get_move(self):
         valid = False
+        print("Player", str(self._player_num) + "'s turn")
+        self._board.display()
         while not valid:
             try:
                 row = int(input("Enter the row: ")) - 1
@@ -140,9 +142,6 @@ class Game:
         finished = False
 
         while not finished:
-            print("Player " + str(player_count + 1) + "'s turn")
-            self._board.display()
-
             row, col = self._players[player_count].get_move()
             self._board.add_piece(row, col, self._players[player_count].get_piece())
 
@@ -152,6 +151,8 @@ class Game:
             if win or self._board.check_full():
                 finished = True
 
+            clear()
+
         if win:
             winner = "1"
             if self._players[1].get_piece() == piece:
@@ -159,6 +160,7 @@ class Game:
             print("Player", str(winner), "won.")
         else:
             print("Player 1 and Player 2 drew")
+
 
 # ------------------------------------------------------------------------------
 # Functions
