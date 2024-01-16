@@ -44,6 +44,11 @@ class Board:
     def _display_horizontal_line(self):
         print("+---" * 3 + "+")
 
+    def _rotate(self, board=None):
+        if board is None:
+            board = self._grid
+        return [[i[k] for i in board] for k in range(3)]
+
     def get_empty(self):
         res = []
         for row, i in enumerate(self._grid):
@@ -239,7 +244,7 @@ def clear():
 def play():
     clear()
     game = Game()
-    game.create_players({"piece": "X", "type": PlayerType.HUMAN}, {"piece": "O", "type": PlayerType.RANDOM})
+    game.create_players({"piece": "X", "type": PlayerType.HUMAN}, {"piece": "O", "type": PlayerType.REINFORCEMENT_LEARNING})
     game.play()
 
 if __name__ == "__main__":
