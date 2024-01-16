@@ -32,7 +32,7 @@ class Board:
             print("¦ " + " ¦ ".join(self._piece_lookup[k] for k in i) + " ¦")
         self._display_horizontal_line()
 
-    def move(self, row, col, character):
+    def add_piece(self, row, col, character):
         if self._grid[row][col]:
             raise CellOccupiedError
         self._grid[row][col] = self._piece_num_lookup[character]
@@ -105,6 +105,46 @@ class Player:
 
 
 # ------------------------------------------------------------------------------
+# Game Class
+# ------------------------------------------------------------------------------
+class Game:
+    def __init__(self):
+        pass
+
+    def create_players(self, player1_piece, player2_piece):
+        self._players = {
+            0: Player(player1_piece),
+            1: Player(player2_piece)
+        }
+
+    def play(self):
+        board = Board()
+
+        player_count = 0
+        finished = False
+
+        while not finished:
+            print("Player " + str(player_count + 1) + "'s turn")
+            board.display()
+
+            row, col = self._players[player_count].get_move()
+            board.add_piece(row, col, self._players[player_count].get_piece())
+
+            player_count = modulo_addition(player_count, 1, 2)
+
+            win, piece = board.check_win()
+            if win or board.check_full():
+                finished = True
+
+        if win:
+            winner = "1"
+            if self._players[1].get_piece() == piece:
+                winner = "2"
+            print("Player", str(winner), "won.")
+        else:
+            print("Player 1 and Player 2 drew")
+
+# ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
 def modulo_addition(num1, num2, base):
@@ -114,36 +154,9 @@ def modulo_addition(num1, num2, base):
 # Play method
 # ------------------------------------------------------------------------------
 def play():
-    player = {
-        0: Player("X"),
-        1: Player("O")
-    }
-
-    board = Board()
-
-    player_count = 0
-    finished = False
-
-    while not finished:
-        print("Player " + str(player_count + 1) + "'s turn")
-        board.display()
-
-        row, col = player[player_count].get_move()
-        board.move(row, col, player[player_count].get_piece())
-
-        player_count = modulo_addition(player_count, 1, 2)
-
-        win, piece = board.check_win()
-        if win or board.check_full():
-            finished = True
-
-    if win:
-        winner = "1"
-        if player[1].get_piece() == piece:
-            winner = "2"
-        print("Player", str(winner), "won.")
-    else:
-        print("Player 1 and Player 2 drew")
+    game = Game()
+    game.create_players("X", "O")
+    game.play()
 
 if __name__ == "__main__":
     play()
