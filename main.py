@@ -102,3 +102,48 @@ class Player:
                 print("The column you entered was not valid. Please enter another")
 
         return row, col
+
+
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+def modulo_addition(num1, num2, base):
+    return (num1 + num2) % base
+
+# ------------------------------------------------------------------------------
+# Play method
+# ------------------------------------------------------------------------------
+def play():
+    player = {
+        0: Player("X"),
+        1: Player("O")
+    }
+
+    board = Board()
+
+    player_count = 0
+    finished = False
+
+    while not finished:
+        print("Player " + str(player_count + 1) + "'s turn")
+        board.display()
+
+        row, col = player[player_count].get_move()
+        board.move(row, col, player[player_count].get_piece())
+
+        player_count = modulo_addition(player_count, 1, 2)
+
+        win, piece = board.check_win()
+        if win or board.check_full():
+            finished = True
+
+    if win:
+        winner = "1"
+        if player[1].get_piece() == piece:
+            winner = "2"
+        print("Player", str(winner), "won.")
+    else:
+        print("Player 1 and Player 2 drew")
+
+if __name__ == "__main__":
+    play()
