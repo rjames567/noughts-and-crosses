@@ -6,3 +6,7 @@ class Board:
             1: "X",
             -1: "O"
         }
+
+    def display(self):
+        for i in self._grid:
+            print("¦ " + " ¦ ".join(self._piece_lookup[k] for k in i) + " ¦")
