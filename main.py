@@ -5,6 +5,7 @@ import os
 import time
 import random
 import enum
+import math
 
 
 # ------------------------------------------------------------------------------
@@ -106,6 +107,16 @@ class Board:
             rotations.append(self._rotate(rotations[i]))
         return ["".join(str(i) for sub in arr for i in sub) for arr in rotations]
 
+    @classmethod
+    def one_d_index_to_two_d(self, index):
+        col = index % 3
+        row = (index - col) // 3
+        return row, col
+
+    @classmethod
+    def two_d_index_to_one_d(self, row, col):
+        return (3 * row) + col
+
 # ------------------------------------------------------------------------------
 # Player Class
 # ------------------------------------------------------------------------------
@@ -152,6 +163,9 @@ class Player:
 
         return row, col
 
+    def end_game(self, win, draw):
+        pass
+
 
 # ------------------------------------------------------------------------------
 # Random player
@@ -162,7 +176,7 @@ class RandomPlayer(Player):
         self._board.display()
         print("Player", str(self._player_num) + " is thinking")
         arr = self._board.get_empty()
-        time.sleep(random.randrange(1, 5))
+        # time.sleep(random.randrange(1, 5))
         return random.choice(arr)
 
 
@@ -173,6 +187,7 @@ class ReinforcementLearningPlayer(Player):
     def __init__(self, piece, board, player_num):
         super().__init__(piece, board, player_num)
         self._load_file()
+        self._move_record = dict()
 
     def _load_file(self):
         self._lookup = dict()
@@ -180,6 +195,41 @@ class ReinforcementLearningPlayer(Player):
             for i in f:
                 items = i.split(",")
                 self._lookup[items[0]] = [int(i) for i in items[1:]]
+
+    def get_move(self):
+        strings = self._board.get_rotation_strings()
+        location = None
+        for i in strings:
+            if i in self._lookup.keys():
+                location = self._lookup[i].index(max(self._lookup[i]))
+                break
+
+        if location is None:
+            location = random.choice(self._board.get_empty())
+            location = self._board.two_d_index_to_one_d(location[0], location[1])
+
+        self._move_record[i] = location
+
+        return self._board.one_d_index_to_two_d(location)
+
+    def end_game(self, win, draw):
+        if win:
+            change = -1
+        elif draw:
+            change = 1
+        else:
+            change = 2
+
+        for i in self._move_record:
+            try:
+                self._lookup[i][self._move_record[i]] += change
+            except KeyError:
+                self._lookup[i] = [0 for i in range(9)]
+                self._lookup[i][self._move_record[i]] += change
+
+        with open("data.csv", "w+") as f:
+            for i in self._lookup:
+                f.write(i + "," + ",".join(str(k) for k in self._lookup[i]) + "\n")
 
 
 # ------------------------------------------------------------------------------
@@ -217,13 +267,13 @@ class Game:
             valid = False
             while not valid:
                 row, col = self._players[player_count].get_move()
-                try:
-                    self._board.add_piece(row, col, self._players[player_count].get_piece())
-                    valid = True
-                except CellOccupiedError:
-                    print("The chosen cell is occupied. Please chose another.")
-                    time.sleep(2)
-                    clear()
+                # try:
+                self._board.add_piece(row, col, self._players[player_count].get_piece())
+                valid = True
+                # except CellOccupiedError:
+                #     print("The chosen cell is occupied. Please chose another.")
+                #     time.sleep(2)
+                #     clear()
 
             player_count = modulo_addition(player_count, 1, 2)
 
@@ -234,12 +284,19 @@ class Game:
             clear()
 
         if win:
-            winner = "1"
-            if self._players[1].get_piece() == piece:
-                winner = "2"
+            if self._players[0].get_piece() == piece:
+                winner = 1
+                self._players[0].end_game(True, False)
+            else:
+                winner = 2
+                self._players[1].end_game(False, False)
             print("Player", str(winner), "wins.")
+            return winner
         else:
             print("Player 1 and Player 2 drew")
+            self._players[0].end_game(False, True)
+            self._players[1].end_game(False, True)
+            return None
 
 
 # ------------------------------------------------------------------------------
@@ -249,7 +306,8 @@ def modulo_addition(num1, num2, base):
     return (num1 + num2) % base
 
 def clear():
-    os.system("clear" if os.name == "posix" else "cls")
+    pass
+    # os.system("clear" if os.name == "posix" else "cls")
 
 # ------------------------------------------------------------------------------
 # Play method
@@ -257,8 +315,35 @@ def clear():
 def play():
     clear()
     game = Game()
-    game.create_players({"piece": "X", "type": PlayerType.HUMAN}, {"piece": "O", "type": PlayerType.REINFORCEMENT_LEARNING})
-    game.play()
+    game.create_players({"piece": "X", "type": PlayerType.RANDOM}, {"piece": "O", "type": PlayerType.REINFORCEMENT_LEARNING})
+    return game.play()
 
 if __name__ == "__main__":
-    play()
+    outer_record = dict()
+    final_record = {1: 0, 2: 0, "draw": 0, "fail": 0}
+    record = dict()
+    count = 0
+    try:
+        while True:
+            if not count % 10000:
+                if len(record):
+                    outer_record[str(count - 100) + " - " + str(count - 1)] = record
+                record = {1: 0, 2: 0, "draw": 0, "fail": 0}
+            try:
+                win = play()
+                if win is None:
+                    record["draw"] += 1
+                    final_record["draw"] += 1
+                else:
+                    record[win] += 1
+                    final_record[win] += 1
+            except CellOccupiedError:
+                record["fail"] += 1
+                final_record["fail"] += 1
+                continue
+            count += 1
+    except:
+        for i in outer_record:
+            print(f"{i}    Random: {record[1]}    AI: {record[2]}    draw: {record['draw']}    fail: {record['fail']}")
+
+        print(f"\n\nOverall    Random: {final_record[1]}    AI: {final_record[2]}    draw: {final_record['draw']}    fail: {final_record['fail']}")
