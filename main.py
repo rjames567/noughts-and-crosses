@@ -59,10 +59,11 @@ class Board:
         return res
 
     def display(self):
-        for i in self._grid:
-            self._display_horizontal_line()
-            print("¦ " + " ¦ ".join(self._piece_lookup[k] for k in i) + " ¦")
-        self._display_horizontal_line()
+        # for i in self._grid:
+        #     self._display_horizontal_line()
+        #     print("¦ " + " ¦ ".join(self._piece_lookup[k] for k in i) + " ¦")
+        # self._display_horizontal_line()
+        pass
 
     def add_piece(self, row, col, character):
         if self._grid[row][col]:
@@ -131,7 +132,7 @@ class Player:
 
     def get_move(self):
         valid = False
-        print("Player", str(self._player_num) + "'s turn")
+        # print("Player", str(self._player_num) + "'s turn")
         self._board.display()
         while not valid:
             try:
@@ -172,9 +173,9 @@ class Player:
 # ------------------------------------------------------------------------------
 class RandomPlayer(Player):
     def get_move(self):
-        print("Player", str(self._player_num) + "'s turn")
+        # print("Player", str(self._player_num) + "'s turn")
         self._board.display()
-        print("Player", str(self._player_num) + " is thinking")
+        # print("Player", str(self._player_num) + " is thinking")
         arr = self._board.get_empty()
         # time.sleep(random.randrange(1, 5))
         return random.choice(arr)
@@ -290,10 +291,10 @@ class Game:
             else:
                 winner = 2
                 self._players[1].end_game(False, False)
-            print("Player", str(winner), "wins.")
+            # print("Player", str(winner), "wins.")
             return winner
         else:
-            print("Player 1 and Player 2 drew")
+            # print("Player 1 and Player 2 drew")
             self._players[0].end_game(False, True)
             self._players[1].end_game(False, True)
             return None
@@ -329,6 +330,8 @@ if __name__ == "__main__":
                 if len(record):
                     outer_record[str(count - 100) + " - " + str(count - 1)] = record
                 record = {1: 0, 2: 0, "draw": 0, "fail": 0}
+            if not count % 10:
+                print(count)
             try:
                 win = play()
                 if win is None:
